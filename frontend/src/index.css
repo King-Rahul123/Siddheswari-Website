@@ -1,0 +1,25 @@
+@import 'tailwindcss';
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background-image: url('https://wallpapers.com/images/hd/medicine-pictures-1200-x-630-f9t70nxpi2n2ujwz.jpg');
+  background-attachment: fixed;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  color: #333;
+}
+
+/* TAILWIND COMPONENTS */
+@layer components {
+  .sidebar-link {
+    @apply flex items-center gap-3 px-4 py-2 rounded-lg transition hover:bg-white/15;
+  }
+
+  .sidebar-link.active {
+    @apply bg-white/25 font-semibold;
+  }
+}
