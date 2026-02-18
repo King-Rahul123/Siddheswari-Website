@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import Popup from "../Dashboard_pages/Popup";
 
 export default function D_Header({ setMobileMenubarOpen }) {
     const [time, setTime] = useState(new Date());
+    const [profileOpen, setProfileOpen] = useState(false);
+    const [profileAnchor, setProfileAnchor] = useState(null);
 
     useEffect(() => {
         const timer = setInterval(() => setTime(new Date()), 1000);
@@ -29,9 +32,9 @@ export default function D_Header({ setMobileMenubarOpen }) {
                     </button>
 
                     {/* Profile */}
-                    <Link to="/dashboard/profile" className="h-10 w-10 rounded-full bg-white flex items-center justify-center overflow-hidden">
+                    <button onClick={(e) => { const rect = e.currentTarget.getBoundingClientRect(); setProfileAnchor(rect); setProfileOpen(true); }} className="h-10 w-10 rounded-full bg-white flex items-center justify-center overflow-hidden">
                         <img src="https://i.pravatar.cc/40" alt="Profile" className="h-full w-full object-cover" />
-                    </Link>
+                    </button>
 
                     {/* Menue Bar */}
                     <button className="md:hidden" onClick={() => setMobileMenubarOpen(prev => !prev)}>
@@ -39,6 +42,7 @@ export default function D_Header({ setMobileMenubarOpen }) {
                     </button>
                 </div>
             </header>
+            <Popup open={profileOpen} onClose={() => setProfileOpen(false)} type="profile" anchorRect={profileAnchor} />
         </div>
     );
 }

@@ -214,11 +214,11 @@ export default function Articals() {
 
       {/* FOOTER */}
       {activeCompany === "siddheswari" ? ( 
-        <footer className="bg-amber-500/85 text-white text-center p-4 fixed bottom-0 w-full">
+        <footer className="bg-amber-500/85 text-white text-center p-4 bottom-0 w-full">
           <p>@ {new Date().getFullYear()} New Siddheswari Distributors. All rights reserved.</p>
         </footer>
       ) : (
-        <footer className="bg-green-500/85 text-white text-center p-4 fixed bottom-0 w-full">
+        <footer className="bg-green-500/85 text-white text-center p-4 bottom-0 w-full">
           <p>@ {new Date().getFullYear()} New Gita Enterprise. All rights reserved.</p>
         </footer>
       )}

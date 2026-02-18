@@ -11,16 +11,16 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 
 import Dashboard from "./pages/Dashboard";
-import Analytics from "./components/Analytics";
-import D_Header from "./components/D_Header";
-import D_Menubar from "./components/D_Menubar";
-import Profile from "./components/Profile";
-import Payment from "./components/Payment";
-import MedicalLedger from "./components/Ledger";
-import StaffAttendance from "./components/StaffAttendance";
-import RegisterBook from "./components/RegisterBook";
-import Products from "./components/Products";
-import Purchase_Sale from "./components/Purchase_Sale";
+import Analytics from "./Dashboard_pages/Analytics";
+import D_Header from "./Dashboard_Components/D_Header";
+import D_Menubar from "./Dashboard_Components/D_Menubar";
+import Profile from "./Dashboard_pages/Profile";
+import Payment from "./Dashboard_pages/Payment";
+import MedicalLedger from "./Dashboard_pages/Ledger";
+import StaffAttendance from "./Dashboard_pages/StaffAttendance";
+import RegisterBook from "./Dashboard_pages/RegisterBook";
+import Products from "./Dashboard_pages/Products";
+import Purchase_Sale from "./Dashboard_pages/Purchase_Sale";
 
 /* ---------- PUBLIC LAYOUT ---------- */
 function PublicLayout() {

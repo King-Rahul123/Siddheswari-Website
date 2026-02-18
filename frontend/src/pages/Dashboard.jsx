@@ -28,7 +28,7 @@ export default function Dashboard() {
                     </div>
                     <div onClick={() => navigate("/dashboard/ledger")} title="Total Dues on Market" className="bg-white rounded-xl shadow p-4 md:p-6 text-center">
                         <h3 className="text-base sm:text-lg md:text-xl font-semibold">Ledger</h3>
-                        <p className="text-xl md:text-lg mt-2 font-bold">₹{}</p>
+                        <p className="text-xl md:text-lg mt-2 font-bold">₹0</p>
                     </div>
                     <div onClick={() => navigate("/dashboard/")} title="Today's Total Sale" className="bg-white rounded-xl shadow p-4 md:p-6 text-center">
                         <h3 className="text-base sm:text-lg md:text-xl font-semibold">Sales</h3>

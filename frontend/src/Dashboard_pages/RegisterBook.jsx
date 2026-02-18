@@ -1,14 +1,19 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import Popup from "./Popup";
 
 export default function RegisterBook() {
-    const [activeTab, setActiveTab] = useState("staff");
+    const [searchParams, setSearchParams] = useSearchParams();
+    const tabFromURL = searchParams?.get?.("tab") || null;
+
+    const [activeTab, setActiveTab] = useState(tabFromURL || "shop");
+    
     const [openPopup, setOpenPopup] = useState(false);
     const [popupType, setPopupType] = useState("staff");
     
     const staffData = [];
     const shopData = [];
-
+        
     // CSV Export Helper
     const exportToCSV = (data, filename) => {
         if (!data || data.length === 0) {
@@ -64,8 +69,8 @@ export default function RegisterBook() {
             <div className="bg-white rounded-xl shadow-sm border p-4">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-5">
                     <div className="flex md:flex-wrap gap-2">
-                        <button onClick={() => setActiveTab("staff")} className={`text-sm md:text-base px-3 md:px-4 py-2 rounded-lg font-medium transition ${ activeTab === "staff"? "bg-blue-600 text-white": "bg-gray-100 text-slate-600 hover:bg-gray-200"}`}><i className="fas fa-user"></i> Staff Details</button>
-                        <button onClick={() => setActiveTab("shop")} className={`text-sm md:text-base px-3 md:px-4 py-2 rounded-lg font-medium transition ${ activeTab === "shop"? "bg-blue-600 text-white": "bg-gray-100 text-slate-600 hover:bg-gray-200"}`}><i className="bi bi-building"></i> Shop Details</button>
+                        <button onClick={() => { setActiveTab("staff"); setSearchParams({ tab: "staff" }); }} className={`text-sm md:text-base px-3 md:px-4 py-2 rounded-lg font-medium transition ${ activeTab === "staff"? "bg-blue-600 text-white": "bg-gray-100 text-slate-600 hover:bg-gray-200"}`}><i className="fas fa-user"></i> Staff Details</button>
+                        <button onClick={() => { setActiveTab("shop"); setSearchParams({ tab: "shop" }); }} className={`text-sm md:text-base px-3 md:px-4 py-2 rounded-lg font-medium transition ${ activeTab === "shop"? "bg-blue-600 text-white": "bg-gray-100 text-slate-600 hover:bg-gray-200"}`}><i className="bi bi-building"></i> Shop Details</button>
                     </div>
                     <button title="Add Staff" onClick={() => {setPopupType("staff");setOpenPopup(true);}} className={`flex items-center justify-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition font-medium whitespace-nowrap ${activeTab === "staff"? "block":"hidden"}`}><i className="fas fa-plus mr-2"></i>Add Staff</button>
                     <button title="Register Shop" onClick={() => {setPopupType("shop");setOpenPopup(true);}} className={`flex items-center justify-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition font-medium whitespace-nowrap ${activeTab === "shop"? "block":"hidden"}`}><i className="fas fa-plus mr-2"></i>Register</button>
@@ -78,7 +83,7 @@ export default function RegisterBook() {
                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"><i className="fas fa-search"></i></span>
                         <input type="text" placeholder={`Search ${activeTab === "staff" ? "staff" : "shop"}...`} className="bg-gray-50 border-gray-300 form-control pl-8 pr-2 py-2 border-b border-l rounded-lg w-full"/>
                     </div>
-                    <span className="text-sm text-slate- md:mr-5">Total {activeTab === "staff" ? "Staff" : "shop"}:{" "}<strong>0</strong></span>
+                    <span className="text-sm text-slate-500 md:mr-5">Total {activeTab === "staff" ? "Staff" : "Shops"}:{" "}<strong>0</strong></span>
                 </div>
 
                 {/* ================= STAFF TABLE ================= */}

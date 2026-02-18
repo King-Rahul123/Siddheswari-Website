@@ -1,12 +1,50 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 
-export default function Popup({ open, onClose, type }) {
+export default function Popup({ open, onClose, type, anchorRect }) {
+    const containerRef = useRef(null);
+
     useEffect(() => {
-        if (open) {document.body.style.overflow = "hidden";}
-        else {document.body.style.overflow = "auto";}
-        return () => {document.body.style.overflow = "auto";};
-    }, [open]);
+        // only lock body scroll for full-screen modals (not for small profile popover)
+        if (open && type !== "profile") { document.body.style.overflow = "hidden"; }
+        else { document.body.style.overflow = "auto"; }
+        return () => { document.body.style.overflow = "auto"; };
+    }, [open, type]);
+
+    // close when clicking outside the small anchored profile popover
+    useEffect(() => {
+        if (!open || type !== "profile") return;
+        function handleClickOutside(e) {
+            if (containerRef.current && !containerRef.current.contains(e.target)) {
+                onClose();
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [open, type, onClose]);
     
+    if (!open) return null;
+
+    const title = type === "staff" ? "Add Staff" : type === "profile" ? "Profile" : "Register Shop";
+
+    // small anchored profile popover
+    if (type === "profile") {
+        if (!open) return null;
+
+        const top = anchorRect ? Math.round(anchorRect.bottom + 8) : 64;
+        const right = anchorRect ? Math.round(window.innerWidth - anchorRect.right + 8) : 20;
+
+        return (
+            <div ref={containerRef} style={{ position: "fixed", top: top + "px", right: right + "px", zIndex: 60 }} className="bg-white rounded-lg shadow-lg w-64 p-4">
+                <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-lg font-semibold">{title}</h3>
+                    <button onClick={onClose} className="text-slate-500 hover:text-black">&times;</button>
+                </div>
+                <ProfileView onClose={onClose} />
+            </div>
+        );
+    }
+
     if (!open) return null;
 
     return (
@@ -14,9 +52,10 @@ export default function Popup({ open, onClose, type }) {
             <div className="bg-white rounded-xl shadow-xl w-full max-w-4xl p-6 overflow-y-auto md:max-h-180 max-h-130">
                 {/* Header */}
                 <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-2xl font-bold text-slate-800">{type === "staff" ? "Add Staff" : "Register Shop"}</h2>
+                    <h2 className="text-2xl font-bold text-slate-800">{title}</h2>
                     <button onClick={onClose} className="text-2xl leading-none text-slate-500 hover:text-black">&times;</button>
                 </div>
+
                 {type === "staff" ? (
                     <StaffForm onClose={onClose} />
                 ) : (
@@ -95,7 +134,7 @@ function ShopForm({ onClose }) {
                         <Input />
                     </div>
                     <File label="GST Image / PDF (Optional)" />
-                    </div>
+                </div>
             </div>
             
             {/* Mandatory note */}
@@ -206,6 +245,34 @@ function Select({ label, options = [], required }) {
                     </option>
                 ))}
             </select>
+        </div>
+    );
+}
+
+
+/*  =============================================================
+Profile model
+================================================================ */
+
+function ProfileView({ onClose }) {
+    return (
+        <div className="space-y-6">
+            <div className="flex flex-col items-center gap-4">
+                <div className="h-20 w-20 rounded-full overflow-hidden bg-slate-100">
+                    <img src="https://i.pravatar.cc/160" alt="Profile" className="h-full w-full object-cover" />
+                </div>
+                <div className="text-center">
+                    <h3 className="text-xl font-semibold">Prasanta Kumar Adak</h3>
+                    <p className="text-sm text-slate-600">prasanta@example.com</p>
+                    <p className="text-sm text-slate-500 mt-1">Owner · Siddheswari Shop</p>
+                    <p className="text-sm text-slate-500 mt-1">Contact: +91 9876543210</p>
+                </div>
+            </div>
+
+            <div className="flex gap-3 justify-center pt-2 text-[12px]">
+                <Link to="/logout" className="px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-700">Log-out</Link>
+                <Link to="/dashboard/profile" onClick={() => onClose && onClose()} className="px-4 py-2 rounded-lg bg-gray-500 text-white hover:bg-gray-700">Profile</Link>
+            </div>
         </div>
     );
 }

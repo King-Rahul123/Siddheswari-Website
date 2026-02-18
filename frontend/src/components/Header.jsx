@@ -12,11 +12,11 @@ export default function Header({ setSidebarOpen }) {
 
             {/* Desktop Menu View */}
             <nav className="hidden md:flex gap-6 text-black font-bold">
-                <a href="/" className="hover:text-white p-2 hover:bg-black/40 rounded-sm">Home</a>
-                <a href="/articals" className="hover:text-white p-2 hover:bg-black/40 rounded-sm">Services</a>
+                <Link to="/" className="hover:text-white p-2 hover:bg-black/40 rounded-sm">Home</Link>
+                <Link to="/articals" className="hover:text-white p-2 hover:bg-black/40 rounded-sm">Services</Link>
                 <a href="#about" className="hover:text-white p-2 hover:bg-black/40 rounded-sm">About</a>
                 <a href="#contact" className="hover:text-white p-2 hover:bg-black/40 rounded-sm">Contact</a>
-                <a href="/login" className="hover:text-white p-2 hover:bg-orange-400 rounded-sm">Sign-in</a>
+                <Link to="/login" className="hover:text-white p-2 hover:bg-orange-400 rounded-sm">Sign-in</Link>
             </nav>
 
             {/* Mobile View */}

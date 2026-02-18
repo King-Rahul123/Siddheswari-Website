@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { AnimatePresence, motion as Motion } from "framer-motion";
-import ChangePassword from "./ChangePassword";
+import ChangePassword from "../components/ChangePassword";
 
 export default function Profile() {
     const [showForgot, setShowForgot] = useState(false);
@@ -31,6 +31,15 @@ export default function Profile() {
         setProfileImage(imageURL);
     };
 
+    // Documents upload state
+    const [documents, setDocuments] = useState({
+        aadhar: null,
+        pan: null,
+        bcda: null,
+        drug: null,
+        gst: null,
+    });
+
     const handleSave = () => {
         console.log("Saved Profile Data:", profileData);
         console.log("Saved Documents:", documents);
@@ -42,16 +51,7 @@ export default function Profile() {
         setEdit(false);
     };
 
-    // Documents upload state
-    const [documents, setDocuments] = useState({
-        aadhar: null,
-        pan: null,
-        bcda: null,
-        drug: null,
-        gst: null,
-    });
-
-    // 🔴 NEW: document upload handler
+    // Document upload handler
     const handleDocumentUpload = (type, file) => {
         if (!file) return;
         setDocuments((prev) => ({

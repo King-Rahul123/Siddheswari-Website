@@ -25,10 +25,10 @@ const Sidebar = ({ open, setOpen }) => {
                 <nav className="mt-16 px-6">
                     <ul className="flex flex-col gap-4 text-lg">
                         <Link to="/" className={isActive("/")} onClick={() => setOpen(false)}>Home</Link>
-                        <Link to="/services" className={isActive("/services")} onClick={() => setOpen(false)}>Services</Link>
-                        <Link to="/about" className={isActive("/about")} onClick={() => setOpen(false)}>About</Link>
-                        <Link to="/contact" className={isActive("/contact")} onClick={() => setOpen(false)}>Contact Us</Link>
-                        <Link to="/signin" className={isActive("/signin")} onClick={() => setOpen(false)}>Sign-in</Link>
+                        <Link to="/articals" className={isActive("/articals")} onClick={() => setOpen(false)}>Services</Link>
+                        <a href="#about" className="text-white" onClick={() => setOpen(false)}>About</a>
+                        <a href="#contact" className="text-white" onClick={() => setOpen(false)}>Contact Us</a>
+                        <Link to="/login" className={isActive("/login")} onClick={() => setOpen(false)}>Sign-in</Link>
                     </ul>
                 </nav>
             </aside>
