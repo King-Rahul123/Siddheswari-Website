@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 
 /* ✅ STATIC DATA (KEEP OUTSIDE COMPONENT) */
 const MY_LEDGER_DATA = [
@@ -32,6 +32,30 @@ const PARTY_LEDGER_DATA = [
     },
 ];
 
+const STAFF_LEDGER_DATA = [
+    {
+        id: "U1023",
+        name: "Rahul Das",
+        phone: "9876543210",
+        address: "Kolkata",
+        remarks: "Due",
+    },
+    {
+        id: "U1044",
+        name: "Sneha Roy",
+        phone: "9123456780",
+        address: "Howrah",
+        remarks: "Paid",
+    },
+    {
+        id: "U1045",
+        name: "Anil Kumar",
+        phone: "9123456760",
+        address: "Howrah",
+        remarks: "Overdue",
+    },
+];
+
 const getStatusBadgeClass = (status) => {
   switch (status) {
     case "Paid":
@@ -44,6 +68,16 @@ const getStatusBadgeClass = (status) => {
   }
 };
 
+const normalizeRemark = (r) => {
+    if (!r) return "";
+    const s = String(r).toLowerCase();
+    if (s.includes("paid")) return "Paid";
+    if (s.includes("over") || s.includes("overdeu") || s.includes("overdue")) return "Overdue";
+    if (s.includes("due")) return "Due";
+    // fallback: capitalize
+    return String(r).charAt(0).toUpperCase() + String(r).slice(1);
+};
+
 export default function Ledger() {
     /* ✅ STATES */
     const [searchParams, setSearchParams] = useSearchParams();
@@ -53,6 +87,7 @@ export default function Ledger() {
 
     const [search, setSearch] = useState("");
     const [date, setDate] = useState("");
+    const navigate = useNavigate();
 
     /* ✅ FILTER LOGIC (NO ESLINT ERROR) */
     const filteredMyLedger = useMemo(() => {
@@ -70,21 +105,62 @@ export default function Ledger() {
     /* ✅ PARTY LEDGER FILTER */
     const filteredPartyLedger = useMemo(() => {
         return PARTY_LEDGER_DATA.filter((item) => {
-            const q = search.toLowerCase();
+            const q = (search || "").toLowerCase();
+            const shop = (item.shop || "").toLowerCase();
+            const id = (item.id || "").toLowerCase();
+            const phone = (item.phone || "").toLowerCase();
+            const address = (item.address || "").toLowerCase();
+            const remarks = (item.remarks || "").toLowerCase();
+
             return (
-            item.shop.toLowerCase().includes(q) ||
-            item.id.toLowerCase().includes(q) ||
-            item.phone.includes(q) ||
-            item.address.toLowerCase().includes(q) ||
-            item.remarks.toLowerCase().includes(q)
+                shop.includes(q) ||
+                id.includes(q) ||
+                phone.includes(q) ||
+                address.includes(q) ||
+                remarks.includes(q)
             );
         });
     }, [search]);
 
+    /* ✅ Staff LEDGER FILTER */
+    const filteredStaffLedger = useMemo(() => {
+        return STAFF_LEDGER_DATA.filter((item) => {
+            const s = (search || "").toLowerCase();
+            const name = (item.name || item.shop || "").toLowerCase();
+            const id = (item.id || "").toLowerCase();
+            const phone = (item.phone || "").toLowerCase();
+            const address = (item.address || "").toLowerCase();
+            const remarks = (item.remarks || "").toLowerCase();
+
+            return (
+                name.includes(s) ||
+                id.includes(s) ||
+                phone.includes(s) ||
+                address.includes(s) ||
+                remarks.includes(s)
+            );
+        });
+    }, [search]);
 
     /* ✅ TOTAL AMOUNT */
     const totalAmount = useMemo(() => {
         return filteredMyLedger.reduce((sum, item) => sum + item.amount,0);
+    }, [filteredMyLedger]);
+
+    const calcDaysSince = (dateStr) => {
+        if (!dateStr) return 0;
+        const d = new Date(dateStr);
+        const today = new Date();
+        const diff = today - d; // ms
+        return Math.floor(diff / (1000 * 60 * 60 * 24));
+    };
+
+    const totalOverdue = useMemo(() => {
+        return filteredMyLedger.reduce((sum, item) => {
+            const days = calcDaysSince(item.dueDate);
+            const overdue = days > 0; // dueDate in past
+            return sum + (overdue ? item.amount : 0);
+        }, 0);
     }, [filteredMyLedger]);
 
     return (
@@ -136,19 +212,29 @@ export default function Ledger() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredMyLedger.length > 0 ? (filteredMyLedger.map((item, index) => (
+                                {filteredMyLedger.length > 0 ? (filteredMyLedger.map((item, index) => {
+                                    const days = calcDaysSince(item.dueDate);
+                                    const overdue = days > 0;
+                                    return (
                                     <tr key={index} className="hover:bg-slate-50 border-b border-gray-200 text-xs md:text-base">
                                         <td className="md:px-5 px-2 py-3 font-medium text-slate-800 text-center border-r border-gray-300">{item.company}</td>
-                                        <td className="md:px-0 px-2 py-3 text-center font-semibold text-rose-600">₹{item.amount.toLocaleString()}</td>
+                                        <td className={`md:px-0 px-2 py-3 text-center font-semibold ${overdue ? 'text-red-600' : 'text-gray-900'}`}>₹{item.amount.toLocaleString()}</td>
                                         <td className="md:px-0 px-2 py-3 text-center border-l border-gray-300">
                                             <span className="inline-flex items-center gap-1 px-1 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-700">{item.dueDate}</span>
                                         </td>
                                     </tr>
-                                ))
-                                ) : (
+                                )})) : (
                                     <tr><td colSpan="3" className="text-center text-slate-500 py-8">No ledger records found</td></tr>
                                 )}
                             </tbody>
+                            <tfoot>
+                                <tr className="font-semibold">
+                                    <td className="px-3 py-2 text-right">Due Balance:</td>
+                                    <td className="px-3 py-2 text-center text-red-500">₹{totalOverdue.toLocaleString()}</td>
+                                    <td className="px-3 py-2"></td>
+                                </tr>
+                            </tfoot>
+                        
                         </table>
                     </div>
 
@@ -185,13 +271,13 @@ export default function Ledger() {
                             </thead>
                             <tbody>
                                 {filteredPartyLedger.length > 0 ? (filteredPartyLedger.map((p, index) => (
-                                    <tr key={index} className="hover:bg-slate-50 border-b border-gray-200 text-xs md:text-base text-center">
+                                    <tr key={index} onClick={() => navigate(`/dashboard/ledger/${p.id}`, { state: { shop: p } })} role="button" className="cursor-pointer hover:bg-slate-50 border-b border-gray-200 text-xs md:text-base text-center">
                                         <td className="py-2 md:px-0 px-2 border-r border-gray-300">{p.id}</td>
                                         <td className="py-2 md:px-0 px-2 border-r border-gray-300">{p.shop}</td>
                                         <td className="py-2 md:px-0 px-2 border-r border-gray-300 hidden md:table-cell">{p.phone}</td>
                                         <td className="py-2 md:px-0 px-2 border-r border-gray-300 hidden md:table-cell">{p.address}</td>
                                         <td className="py-3 md:px-0 px-2 border-l border-gray-300">
-                                            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusBadgeClass(p.remarks)}`}>{p.remarks}</span>
+                                            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusBadgeClass(normalizeRemark(p.remarks))}`}>{normalizeRemark(p.remarks)}</span>
                                         </td>
                                     </tr>
                                   ))
@@ -235,20 +321,20 @@ export default function Ledger() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredPartyLedger.length > 0 ? (filteredPartyLedger.map((p, index) => (
-                                    <tr key={index} className="hover:bg-slate-50 border-b border-gray-200 text-xs md:text-base text-center">
-                                        <td className="py-2 md:px-0 px-2 border-r border-gray-300">{p.id}</td>
-                                        <td className="py-2 md:px-0 px-2 border-r border-gray-300">{p.shop}</td>
-                                        <td className="py-2 md:px-0 px-2 border-r border-gray-300 hidden md:table-cell">{p.phone}</td>
-                                        <td className="py-2 md:px-0 px-2 border-r border-gray-300 hidden md:table-cell">{p.address}</td>
+                                {filteredStaffLedger.length > 0 ? (filteredStaffLedger.map((s, index) => (
+                                    <tr key={index} onClick={() => navigate(`/dashboard/ledger/${s.id}`, { state: { shop: s } })} role="button" className="cursor-pointer hover:bg-slate-50 border-b border-gray-200 text-xs md:text-base text-center">
+                                        <td className="py-2 md:px-0 px-2 border-r border-gray-300">{s.id}</td>
+                                        <td className="py-2 md:px-0 px-2 border-r border-gray-300">{s.name}</td>
+                                        <td className="py-2 md:px-0 px-2 border-r border-gray-300 hidden md:table-cell">{s.phone}</td>
+                                        <td className="py-2 md:px-0 px-2 border-r border-gray-300 hidden md:table-cell">{s.address}</td>
                                         <td className="py-3 md:px-0 px-2 border-l border-gray-300">
-                                            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusBadgeClass(p.remarks)}`}>{p.remarks}</span>
+                                            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusBadgeClass(normalizeRemark(s.remarks))}`}>{normalizeRemark(s.remarks)}</span>
                                         </td>
                                     </tr>
                                   ))
                                 ) : (
                                     <tr>
-                                        <td colSpan="5" className="py-8 text-center text-slate-500">No party ledger records found</td>
+                                        <td colSpan="5" className="py-8 text-center text-slate-500">No staff ledger records found</td>
                                     </tr>
                                 )}
                             </tbody>

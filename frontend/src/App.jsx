@@ -21,6 +21,7 @@ import StaffAttendance from "./Dashboard_pages/StaffAttendance";
 import RegisterBook from "./Dashboard_pages/RegisterBook";
 import Products from "./Dashboard_pages/Products";
 import Purchase_Sale from "./Dashboard_pages/Purchase_Sale";
+import ShowLedger from "./Dashboard_pages/ShowLedger";
 
 /* ---------- PUBLIC LAYOUT ---------- */
 function PublicLayout() {
@@ -81,6 +82,7 @@ export default function App() {
           <Route path="profile" element={<Profile />} />
           <Route path="payment" element={<Payment />} />
           <Route path="ledger" element={<MedicalLedger />} />
+          <Route path="ledger/:partyId" element={<ShowLedger />} />
           <Route path="staffattendance" element={<StaffAttendance />} />
           <Route path="registerbook" element={<RegisterBook />} />
           <Route path="products" element={<Products />} />
